@@ -29,6 +29,7 @@ class DbProviderTest extends \ChangeTests\Change\TestAssets\TestCase
     public function testGetConnectionWithURL()
     {
         $provider = $this->getApplicationServices()->getDbProvider();
+        $originalConnectionInfos = $provider->getConnectionInfos();
 
         $provider->setConnectionInfos(
             array( "url" => "mysql://" )
@@ -56,13 +57,12 @@ class DbProviderTest extends \ChangeTests\Change\TestAssets\TestCase
             $this->assertStringEndsWith('is not set.', $e->getMessage());
         }
 
-        $infos = $provider->getConnectionInfos();
         $_ENV['MYSQL_TEST_URL'] = "mysql://" .
-            (isset($infos['user']) ? $infos['user'] : '') . ":" .
-            (isset($infos['password']) ? $infos['password'] : '') . "@" .
-            (isset($infos['host']) ? $infos['host'] : 'localhost') . ":" .
-            (isset($infos['port']) ? $infos['port'] : '3306') . "/" .
-            $infos['database'];
+            (isset($infos['user']) ? $originalConnectionInfos['user'] : '') . ":" .
+            (isset($infos['password']) ? $originalConnectionInfos['password'] : '') . "@" .
+            (isset($infos['host']) ? $originalConnectionInfos['host'] : 'localhost') . ":" .
+            (isset($infos['port']) ? $originalConnectionInfos['port'] : '3306') . "/" .
+            $originalConnectionInfos['database'];
 
         $pdo = $provider->getDriver();
         $this->assertNotNull($pdo);
